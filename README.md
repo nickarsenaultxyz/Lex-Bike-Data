@@ -132,7 +132,6 @@ Lex_Bike_DataAnalysis/
 ```
 
 ## Configuration
-```
 
 ### Adjusting Match Sensitivity
 Edit parameters in `bikestress_route.py`:
