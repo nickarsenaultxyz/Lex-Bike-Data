@@ -132,15 +132,6 @@ Lex_Bike_DataAnalysis/
 ```
 
 ## Configuration
-
-### Speed Overrides
-You can override incorrect speed data by editing the `SPEED_OVERRIDES` dictionary in `bikestress_route.py`:
-
-```python
-SPEED_OVERRIDES = {
-    "Main St": 25,
-    "University Dr": 35,
-}
 ```
 
 ### Adjusting Match Sensitivity
