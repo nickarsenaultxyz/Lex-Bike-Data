@@ -43,20 +43,6 @@ This analysis helps identify gaps in low-stress bike networks and prioritize inf
 - Python 3.8+
 - Virtual environment (recommended)
 
-### Setup
-
-```bash
-# Clone the repository
-cd /home/nickarsenault/Documents/Lex_Bike_DataAnalysis
-
-# Create and activate virtual environment
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install geopandas pandas numpy pyogrio osmnx folium shapely
-```
-
 ## Usage
 
 ### Basic Analysis
