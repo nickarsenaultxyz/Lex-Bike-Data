@@ -158,7 +158,7 @@ Open `lexbike_LTS_map.html` in a web browser to explore the interactive map:
 Planned improvements noted in the code:
 1. Include walking paths through campus using OSMnx
 2. Create routing feature for low-stress route planning
-3. Version control with Git branching
+3. Include elevation in LTS calculation
 4. Validate funded/proposed facility data
 5. Clarify mixed-type facility definitions
 
