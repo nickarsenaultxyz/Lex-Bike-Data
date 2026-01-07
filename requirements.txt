@@ -1,0 +1,22 @@
+# Core data analysis packages
+numpy>=1.24.0
+pandas>=2.0.0
+
+# Geospatial packages
+geopandas>=0.14.0
+pyogrio>=0.7.0
+shapely>=2.0.0
+osmnx>=1.9.0
+rasterio>=1.3.0
+rio-vrt>=0.3.0
+
+# Network analysis
+networkx>=3.0
+
+# Visualization
+folium>=0.15.0
+matplotlib>=3.7.0
+
+# Optional utilities
+python-dateutil>=2.8.0
+requests>=2.27.0
