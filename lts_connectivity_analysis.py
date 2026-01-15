@@ -265,10 +265,7 @@ def identify_barriers(gdf_low_stress, gdf_high_stress, buffer_distance=50):
     return barriers
 
 
-# =============================================================================
-# MAIN ANALYSIS
-# =============================================================================
-
+# Main 
 print("=" * 60)
 print("LTS CONNECTIVITY ANALYSIS")
 print("Based on Furth & Mekuria (2013)")
@@ -287,10 +284,7 @@ for lts in sorted(network['LTS'].unique()):
     pct = count / len(network) * 100
     print(f"    LTS {lts}: {count:,} segments ({pct:.1f}%)")
 
-# =============================================================================
-# CONNECTIVITY ANALYSIS AT LTS THRESHOLD
-# =============================================================================
-
+# Connectivity analysis
 print(f"\n" + "=" * 60)
 print(f"CONNECTIVITY ANALYSIS AT LTS ≤ {LTS_THRESHOLD}")
 print("=" * 60)
@@ -356,10 +350,6 @@ print(f"    Number of islands: {len(valid_clusters)}")
 # Identify potential barriers
 barriers = identify_barriers(low_stress_filtered, high_stress)
 
-# =============================================================================
-# SAVE RESULTS
-# =============================================================================
-
 print(f"\n" + "=" * 60)
 print("SAVING RESULTS")
 print("=" * 60)
@@ -368,10 +358,7 @@ print("=" * 60)
 print(f"  Saving clusters to {OUT_CLUSTERS}...")
 write_dataframe(low_stress_filtered, OUT_CLUSTERS, driver="GeoJSON")
 
-# =============================================================================
-# CREATE INTERACTIVE MAP
-# =============================================================================
-
+# Create map
 print(f"\n  Creating interactive map...")
 
 # Generate colors for clusters
@@ -425,7 +412,7 @@ folium.GeoJson(
 ).add_to(m)
 
 # Add each cluster as a separate layer (top 20 largest)
-print("    Adding cluster layers...")
+print("   Adding cluster layers...")
 top_clusters = metrics.head(20)['cluster_id'].tolist()
 
 for cluster_id in top_clusters:
@@ -537,27 +524,23 @@ if not low_stress_filtered.empty:
 print(f"  Saving map to {OUT_MAP}...")
 m.save(str(OUT_MAP))
 
-# =============================================================================
-# ANALYSIS SUMMARY
-# =============================================================================
-
 print("\n" + "=" * 60)
 print("ANALYSIS COMPLETE")
 print("=" * 60)
 
 print(f"\nKey Findings:")
-print(f"  • The low-stress network (LTS ≤ {LTS_THRESHOLD}) is fragmented into {len(valid_clusters)} islands")
-print(f"  • The largest island contains only {largest_cluster_pct:.1f}% of low-stress miles")
-print(f"  • This means cyclists must use high-stress roads to travel between most areas")
+print(f"   The low-stress network (LTS ≤ {LTS_THRESHOLD}) is fragmented into {len(valid_clusters)} islands")
+print(f"   The largest island contains only {largest_cluster_pct:.1f}% of low-stress miles")
+print(f"   This means cyclists must use high-stress roads to travel between most areas")
 
 print(f"\nPer Furth & Mekuria (2013):")
-print(f"  • LTS 2 represents routes suitable for 'most adults'")
-print(f"  • Poor connectivity at LTS 2 indicates the network doesn't serve the mainstream population")
-print(f"  • Improvements should focus on connecting these islands")
+print(f"   LTS 2 represents routes suitable for 'most adults'")
+print(f"   Poor connectivity at LTS 2 indicates the network doesn't serve the mainstream population")
+print(f"   Improvements should focus on connecting these islands")
 
 print(f"\nOutput files:")
-print(f"  • Cluster data: {OUT_CLUSTERS}")
-print(f"  • Interactive map: {OUT_MAP}")
+print(f"   Cluster data: {OUT_CLUSTERS}")
+print(f"   Interactive map: {OUT_MAP}")
 
 print(f"\nNext steps for improving connectivity:")
 print(f"  1. Identify strategic barrier crossings (arterials, highways)")

@@ -257,9 +257,9 @@ if len(unmatched_idx) > 0:
     if speed_col in spatial_match.columns:
         matched_spatial = spatial_match[spatial_match[speed_col].notna()].index
         bike_infra.loc[matched_spatial, 'speed_mph'] = spatial_match.loc[matched_spatial, speed_col]
-        print(f"    Matched {len(matched_spatial)} segments spatially")
+        print(f"Matched {len(matched_spatial)} segments spatially")
     else:
-        print(f"    Warning: Could not find speed column in spatial match")
+        print(f"Warning: Could not find speed column in spatial match")
 
 # Round speeds
 bike_infra["speed_mph"] = bike_infra["speed_mph"].apply(round_to_common_mph)
@@ -408,7 +408,7 @@ print("="*60)
 # Save combined network
 print(f"\nSaving combined network to {OUT_ENRICH}...")
 write_dataframe(combined_network, OUT_ENRICH, driver="GeoJSON")
-print(f"✓ Saved {len(combined_network)} segments")
+print(f"Saved {len(combined_network)} segments")
 
 print("\n" + "="*60)
 print("CREATING MAP")
