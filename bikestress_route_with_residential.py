@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """bikestress_route_with_residential.py
 
 Enhanced version that:
@@ -222,7 +221,7 @@ bike_infra['__bike_road_name'] = bike_infra['Name_Network'].apply(normalize_road
 streets['__street_road_name'] = streets['ROADNAME'].apply(normalize_road_name)
 streets['speed_mph'] = pd.to_numeric(streets['SPEED'], errors='coerce')
 
-# Strategy 1: Direct road name match
+# Direct road name match
 name_matches = 0
 for idx in bike_infra.index:
     bike_name = bike_infra.loc[idx, '__bike_road_name']
@@ -237,7 +236,7 @@ for idx in bike_infra.index:
 
 print(f"    Matched {name_matches} segments by road name")
 
-# Strategy 2: Spatial matching for remaining
+# Fallback: Spatial matching for remaining
 unmatched_idx = bike_infra[~bike_infra['__matched_street']].index
 if len(unmatched_idx) > 0:
     print(f"    Spatial matching for {len(unmatched_idx)} remaining segments...")
@@ -286,8 +285,7 @@ print("STEP 3: CLASSIFY ALL STREETS BY ROAD TYPE")
 print("="*60)
 
 # Classify ALL streets by their road characteristics
-# Note: Some streets may overlap with bike infrastructure - that's OK!
-# The map will show bike infrastructure as a separate overlay layer on top
+# Note: Some streets may overlap with bike infrastructure 
 print(f"  Classifying all {len(streets):,} streets by road type...")
 
 # Classify ALL streets
@@ -329,8 +327,8 @@ for lts in sorted(bikeable_network['LTS'].unique()):
     pct = count / len(bikeable_network) * 100
     print(f"    LTS {lts}: {count:,} segments ({pct:.1f}%)")
 
-# Handle unbikeable streets (LTS 5 - new category!)
-# BUT: Filter out segments that have bike infrastructure on them
+# Handle unbikeable streets (LTS 5)
+# Filter out segments that have bike infrastructure on them
 print(f"\n  Filtering unbikeable streets to exclude those with bike infrastructure...")
 print(f"    Initial unbikeable streets: {len(unbikeable_streets):,}")
 
@@ -413,11 +411,11 @@ write_dataframe(combined_network, OUT_ENRICH, driver="GeoJSON")
 print(f"✓ Saved {len(combined_network)} segments")
 
 print("\n" + "="*60)
-print("CREATING INTERACTIVE MAP")
+print("CREATING MAP")
 print("="*60)
 
-# Simplify geometries for better performance
-print("  Simplifying geometries...")
+# Simplify geometries 
+print("  Simplifying geometry...")
 combined_simplified = combined_network.copy()
 combined_simplified['geometry'] = combined_simplified['geometry'].simplify(
     tolerance=0.00001, preserve_topology=True
@@ -501,7 +499,7 @@ for lts_level in [1, 2, 3, 4, 5]:
             smooth_factor=1.0
         ).add_to(m)
 
-# Add legend (no layer control - all layers always visible)
+# Add legend 
 lts_legend_html = """
 <div style="position: fixed; bottom: 20px; left: 20px; z-index: 9999;
             background: white; padding: 15px; border-radius: 8px;
@@ -576,7 +574,7 @@ print(f"  Saving map to {OUT_MAP}...")
 m.save(str(OUT_MAP))
 
 print("\n" + "="*60)
-print("✓ COMPLETE!")
+print("Complete")
 print("="*60)
 print(f"Network saved to: {OUT_ENRICH}")
 print(f"Map saved to: {OUT_MAP}")
