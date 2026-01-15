@@ -1,4 +1,4 @@
-# Lexington Bikestress
+# Lexington Bikestress with Residential Streets
 
 A Python tool for analyzing bicycle Level of Traffic Stress (LTS) across Lexington, Kentucky's complete street network. This project extends traditional bike infrastructure analysis by incorporating residential streets as viable cycling routes.
 
