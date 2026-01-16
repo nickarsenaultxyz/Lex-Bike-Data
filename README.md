@@ -10,7 +10,7 @@ This project computes LTS ratings for the entire Lexington street network, provi
 - **Residential Streets**: Local roads (RDCLASS 5-8) added as bikeable routes where no dedicated infrastructure exists
 - **Major Roads**: Arterials and collectors without bike infrastructure marked as "unbikeable" (LTS 5)
 
-The analysis is based on the methodology from [Furth & Mekuria (2013)](https://www.sciencedirect.com/science/article/abs/pii/S0967070X12001163) - "Network Connectivity for Low-Stress Bicycling."
+The analysis is based on the methodology from Furth & Mekuria (2013)
 
 ## LTS Ratings
 
