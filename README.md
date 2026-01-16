@@ -24,7 +24,7 @@ The analysis is based on the methodology from Furth & Mekuria (2013)
 
 ## Scripts
 
-### `bikestress_route_with_residential.py`
+### `lex-lts.py`
 
 Main analysis script that:
 1. Loads existing bike infrastructure from `lexbike.geojson`
@@ -37,7 +37,7 @@ Main analysis script that:
 
 **Output files:**
 - `lexbike_with_residential.geojson` - Combined network with LTS ratings
-- `lexbike_LTS_map_with_residential.html` - Interactive web map
+- `index.html` - Interactive web map
 
 ### `lts_connectivity_analysis.py`
 
