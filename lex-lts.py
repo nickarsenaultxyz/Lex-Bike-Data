@@ -23,7 +23,7 @@ from folium.plugins import LocateControl, MeasureControl, Fullscreen, MousePosit
 LEX_STREET_DATA_PATH = Path("lex_street_data.geojson")
 GEOJSON_IN = Path("lexbike.geojson")  # Existing bike infrastructure
 OUT_ENRICH = Path("lexbike_with_residential.geojson")
-OUT_MAP = Path("lexbike_LTS_map_with_residential.html")
+OUT_MAP = Path("index.html")
 
 # Street classification criteria
 BIKEABLE_RDCLASS = [5, 6, 7, 8]  # Road classes that are bikeable without infrastructure
