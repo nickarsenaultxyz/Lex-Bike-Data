@@ -42,7 +42,8 @@ OUT_MAP = Path("lexbike_connectivity_map.html")
 LTS_THRESHOLD = 2
 
 # Tolerance for snapping endpoints together (in meters)
-SNAP_TOLERANCE = 15  # meters
+# Reduced from 15m to 8m to prevent false connections between parallel streets
+SNAP_TOLERANCE = 8  # meters
 
 # Minimum cluster size to display (filter out tiny isolated segments)
 MIN_CLUSTER_SEGMENTS = 3

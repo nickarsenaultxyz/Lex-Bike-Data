@@ -236,30 +236,112 @@ for idx in bike_infra.index:
 
 print(f"    Matched {name_matches} segments by road name")
 
-# Fallback: Spatial matching for remaining
+# Fallback: Spatial matching for remaining (with improved algorithm)
 unmatched_idx = bike_infra[~bike_infra['__matched_street']].index
 if len(unmatched_idx) > 0:
     print(f"    Spatial matching for {len(unmatched_idx)} remaining segments...")
     bike_unmatched_m = project_to_local(bike_infra.loc[unmatched_idx])
-    streets_m = project_to_local(streets[['geometry', 'speed_mph']])
 
-    spatial_match = gpd.sjoin_nearest(
-        bike_unmatched_m,
-        streets_m,
-        how="left",
-        max_distance=30,
-        distance_col="__dist_speed"
-    )
-    spatial_match = spatial_match[~spatial_match.index.duplicated(keep='first')]
+    # Include RDCLASS for filtering and geometry for directional validation
+    streets_for_match = streets[['geometry', 'speed_mph', 'RDCLASS']].copy()
+    streets_m = project_to_local(streets_for_match)
 
-    # The joined column might have a suffix, check for it
-    speed_col = 'speed_mph' if 'speed_mph' in spatial_match.columns else 'speed_mph_right'
-    if speed_col in spatial_match.columns:
-        matched_spatial = spatial_match[spatial_match[speed_col].notna()].index
-        bike_infra.loc[matched_spatial, 'speed_mph'] = spatial_match.loc[matched_spatial, speed_col]
-        print(f"Matched {len(matched_spatial)} segments spatially")
-    else:
-        print(f"Warning: Could not find speed column in spatial match")
+    # Prefer main roads (RDCLASS 3-4) over collectors/local streets (RDCLASS 5-8)
+    # Split streets into priority tiers for matching
+    main_roads_m = streets_m[streets_m['RDCLASS'].isin([3, 4])].copy()
+    collector_roads_m = streets_m[streets_m['RDCLASS'].isin([5, 6, 7, 8])].copy()
+
+    # Helper function to calculate bearing/direction of a line
+    def get_line_bearing(geom):
+        """Get the overall bearing of a linestring in degrees (0-180)"""
+        if geom is None or geom.is_empty:
+            return None
+        try:
+            coords = list(geom.coords) if geom.geom_type == 'LineString' else list(geom.geoms[0].coords)
+            if len(coords) < 2:
+                return None
+            dx = coords[-1][0] - coords[0][0]
+            dy = coords[-1][1] - coords[0][1]
+            bearing = np.degrees(np.arctan2(dx, dy)) % 180  # Normalize to 0-180
+            return bearing
+        except:
+            return None
+
+    # Calculate bearings for bike segments
+    bike_unmatched_m['__bearing'] = bike_unmatched_m.geometry.apply(get_line_bearing)
+
+    # Function to find best match with directional validation
+    def find_best_street_match(bike_row, street_candidates, max_dist=15, angle_tolerance=30):
+        """
+        Find the best matching street segment considering:
+        1. Distance (must be within max_dist)
+        2. Direction (must be roughly parallel - within angle_tolerance degrees)
+        """
+        if street_candidates.empty:
+            return None, None
+
+        bike_geom = bike_row.geometry
+        bike_bearing = bike_row['__bearing']
+
+        # Find nearby streets
+        nearby = street_candidates[street_candidates.geometry.distance(bike_geom) <= max_dist].copy()
+
+        if nearby.empty:
+            return None, None
+
+        # Calculate distance and bearing for each candidate
+        nearby['__dist'] = nearby.geometry.distance(bike_geom)
+        nearby['__bearing'] = nearby.geometry.apply(get_line_bearing)
+
+        # Filter by direction if we have valid bearings
+        if bike_bearing is not None:
+            def bearing_diff(street_bearing):
+                if street_bearing is None:
+                    return 90  # Assume perpendicular if unknown
+                diff = abs(bike_bearing - street_bearing)
+                return min(diff, 180 - diff)  # Handle wrap-around
+
+            nearby['__bearing_diff'] = nearby['__bearing'].apply(bearing_diff)
+            # Keep only roughly parallel streets (within angle_tolerance degrees)
+            nearby = nearby[nearby['__bearing_diff'] <= angle_tolerance]
+
+        if nearby.empty:
+            return None, None
+
+        # Return the closest parallel street
+        best_match = nearby.loc[nearby['__dist'].idxmin()]
+        return best_match['speed_mph'], best_match['__dist']
+
+    # First try to match against main roads (RDCLASS 3-4) with tight tolerance
+    matched_speeds = {}
+    matched_count_main = 0
+    matched_count_collector = 0
+
+    for idx in bike_unmatched_m.index:
+        bike_row = bike_unmatched_m.loc[idx]
+
+        # Try main roads first (tighter distance tolerance)
+        speed, dist = find_best_street_match(bike_row, main_roads_m, max_dist=15, angle_tolerance=30)
+
+        if speed is not None and not pd.isna(speed):
+            matched_speeds[idx] = speed
+            matched_count_main += 1
+            continue
+
+        # Fall back to collector roads (slightly looser tolerance)
+        speed, dist = find_best_street_match(bike_row, collector_roads_m, max_dist=12, angle_tolerance=25)
+
+        if speed is not None and not pd.isna(speed):
+            matched_speeds[idx] = speed
+            matched_count_collector += 1
+
+    # Apply matched speeds
+    for idx, speed in matched_speeds.items():
+        bike_infra.loc[idx, 'speed_mph'] = speed
+
+    print(f"    Matched {matched_count_main} segments to main roads (RDCLASS 3-4)")
+    print(f"    Matched {matched_count_collector} segments to collector roads (RDCLASS 5-8)")
+    print(f"    Total spatially matched: {len(matched_speeds)} segments")
 
 # Round speeds
 bike_infra["speed_mph"] = bike_infra["speed_mph"].apply(round_to_common_mph)
