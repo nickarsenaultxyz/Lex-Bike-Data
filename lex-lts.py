@@ -7,7 +7,6 @@ Enhanced version that:
 This gives a more complete picture of the bikeable network in Lexington.
 """
 
-# Import the original script's functionality
 import sys
 from pathlib import Path
 import warnings, math, re, webbrowser
